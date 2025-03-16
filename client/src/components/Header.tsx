@@ -2,7 +2,7 @@ import { Calendar, Clock, Home, Menu, Settings } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface NavItem {
     name: string;
@@ -19,8 +19,27 @@ export const Header: React.FC = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+    // Close mobile menu when path changes
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [location.pathname]);
+
     return (
-        <header>
+        <header className={cn(
+            "fixed top-0 left-0 right-0 z-50 py-4 px-6 transition-all duration-300 flex items-center",
+            isScrolled
+                ? "bg-white/80 dark:bg-background/80 backdrop-blur-sm shadow-subtle"
+                : "bg-transparent"
+        )}>
             <div className="container flex justify-between items-center">
                 <NavLink to="/" className="flex items-center space-x-2 transition-opacity hover:opacity-80">
                     <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
